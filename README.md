@@ -69,10 +69,20 @@ Running this project...
     # Runs the following shell command
     xcrun metal-readobj harvested-archive.metallib
     ```
-5. *Attempt* to use `metal-source` to get pipeline descriptor
+5. Create Thin GPU Archive
     ```sh
     # Runs the following shell command
-    xcrun metal-source -flatbuffers=json harvested-archive.metallib -o descriptors.json
+    xcrun air-lipo -thin applegpu_g13s harvested-archive.metallib -o thin-archive.metallib
+    ```
+6. Verify/Display Information about Thin GPU Archive
+    ```sh
+    # Runs the following shell command
+    xcrun metal-readobj thin-archive.metallib
+    ```
+7. Use `metal-source` to get pipeline descriptor
+    ```sh
+    # Runs the following shell command
+    xcrun metal-source -flatbuffers=json thin-archive.metallib -o descriptors.json
     ```
 
 # Example output showing error
@@ -103,8 +113,8 @@ Build version 14A5229c
 Creating Render Pipeline
 ------------------------
 
-2022-06-23 11:43:39.920133-0500 x-metal-source-on-harvested-gpu-archive[8264:109027] Metal GPU Frame Capture Enabled
-2022-06-23 11:43:39.920532-0500 x-metal-source-on-harvested-gpu-archive[8264:109027] Metal API Validation Enabled
+2022-06-23 12:36:40.169296-0500 x-metal-source-on-harvested-gpu-archive[10087:136743] Metal GPU Frame Capture Enabled
+2022-06-23 12:36:40.169659-0500 x-metal-source-on-harvested-gpu-archive[10087:136743] Metal API Validation Enabled
 
 ----------------------
 Harvesting GPU Archive
@@ -118,7 +128,7 @@ Verify/Display Information about GPU Archive
 
 
 Command: xcrun metal-readobj /var/folders/bd/9qd81pgj4xj01bg4sgp43dvr0000gn/T/harvested-archive.metallib
-Result: 2022-06-23 11:43:39.980679-0500 xcrun[8269:109521] Failed to open macho file at /Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/metal-readobj for reading: Too many levels of symbolic links
+Result: 2022-06-23 12:36:40.230827-0500 xcrun[10092:137207] Failed to open macho file at /Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/metal-readobj for reading: Too many levels of symbolic links
 
 File: /var/folders/bd/9qd81pgj4xj01bg4sgp43dvr0000gn/T/harvested-archive.metallib
 Format: MetalLib
@@ -131,14 +141,35 @@ Arch: agx2
 AddressSize: 64bit
 
 
+-----------------------
+Create Thin GPU Archive
+-----------------------
+
+
+Command: xcrun air-lipo -thin applegpu_g13s /var/folders/bd/9qd81pgj4xj01bg4sgp43dvr0000gn/T/harvested-archive.metallib -o /var/folders/bd/9qd81pgj4xj01bg4sgp43dvr0000gn/T/thin-archive.metallib
+Result:
+
+-------------------------------------------------
+Verify/Display Information about Thin GPU Archive
+-------------------------------------------------
+
+
+Command: xcrun metal-readobj /var/folders/bd/9qd81pgj4xj01bg4sgp43dvr0000gn/T/thin-archive.metallib
+Result: 2022-06-23 12:36:40.249596-0500 xcrun[10094:137217] Failed to open macho file at /Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/metal-readobj for reading: Too many levels of symbolic links
+
+File: /var/folders/bd/9qd81pgj4xj01bg4sgp43dvr0000gn/T/thin-archive.metallib
+Format: Mach-O 64-bit Apple GPU
+Arch: agx2
+AddressSize: 64bit
+
+
 ---------------------------------------------
 Using metal-source to get pipeline descriptor
 ---------------------------------------------
 
 
-Command: xcrun metal-source -flatbuffers=json /var/folders/bd/9qd81pgj4xj01bg4sgp43dvr0000gn/T/harvested-archive.metallib -o /var/folders/bd/9qd81pgj4xj01bg4sgp43dvr0000gn/T/descriptors.json
-Result: metal-source: error: unsupported binary format
-
+Command: xcrun metal-source -flatbuffers=json /var/folders/bd/9qd81pgj4xj01bg4sgp43dvr0000gn/T/thin-archive.metallib -o /var/folders/bd/9qd81pgj4xj01bg4sgp43dvr0000gn/T/descriptors.json
+Result:
 Program ended with exit code: 0
 ```
 

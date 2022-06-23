@@ -115,7 +115,6 @@ Verify/Display Information about Thin GPU Archive
 
 try shell("xcrun metal-readobj \(thinPath)")
 
-
 print("""
 
 ---------------------------------------------
@@ -124,5 +123,15 @@ Using metal-source to get pipeline descriptor
 
 """)
 let descriptorsPath = NSTemporaryDirectory().appending("descriptors.json")
+
+try shell("rm -rf \(descriptorsPath)")
 try shell("xcrun metal-source -flatbuffers=json \(thinPath) -o \(descriptorsPath)")
 
+print("""
+
+--------------------------------
+Display descriptor... directory?
+--------------------------------
+
+""")
+try shell("find \(descriptorsPath)")

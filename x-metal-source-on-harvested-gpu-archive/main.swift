@@ -95,11 +95,34 @@ try shell("xcrun metal-readobj \(archivePath)")
 
 print("""
 
+-----------------------
+Create Thin GPU Archive
+-----------------------
+
+""")
+
+let thinPath = NSTemporaryDirectory().appending("thin-archive.metallib")
+try shell("xcrun air-lipo -thin applegpu_g13s \(archivePath) -o \(thinPath)")
+
+
+print("""
+
+-------------------------------------------------
+Verify/Display Information about Thin GPU Archive
+-------------------------------------------------
+
+""")
+
+try shell("xcrun metal-readobj \(thinPath)")
+
+
+print("""
+
 ---------------------------------------------
 Using metal-source to get pipeline descriptor
 ---------------------------------------------
 
 """)
 let descriptorsPath = NSTemporaryDirectory().appending("descriptors.json")
-try shell("xcrun metal-source -flatbuffers=json \(archivePath) -o \(descriptorsPath)")
+try shell("xcrun metal-source -flatbuffers=json \(thinPath) -o \(descriptorsPath)")
 

@@ -90,8 +90,8 @@ Running this project...
 ## Environment
 
 - MacBook Pro 2021 M1 Max
-- macOS Version 13.0 Beta 22A5266r
-- Xcode Version 14.0 beta 14A5228
+- macOS Version 13.0 Beta 22A5311f
+- Xcode Version 14.0 beta 14A5284g
 
 ```
 
@@ -106,15 +106,15 @@ Result: /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platfor
 
 Command: xcrun xcodebuild -version
 Result: Xcode 14.0
-Build version 14A5229c
+Build version 14A5284g
 
 
 ------------------------
 Creating Render Pipeline
 ------------------------
 
-2022-06-23 12:36:40.169296-0500 x-metal-source-on-harvested-gpu-archive[10087:136743] Metal GPU Frame Capture Enabled
-2022-06-23 12:36:40.169659-0500 x-metal-source-on-harvested-gpu-archive[10087:136743] Metal API Validation Enabled
+2022-07-27 16:24:57.503598-0500 x-metal-source-on-harvested-gpu-archive[5900:86420] Metal GPU Frame Capture Enabled
+2022-07-27 16:24:57.503970-0500 x-metal-source-on-harvested-gpu-archive[5900:86420] Metal API Validation Enabled
 
 ----------------------
 Harvesting GPU Archive
@@ -128,7 +128,7 @@ Verify/Display Information about GPU Archive
 
 
 Command: xcrun metal-readobj /var/folders/bd/9qd81pgj4xj01bg4sgp43dvr0000gn/T/harvested-archive.metallib
-Result: 2022-06-23 12:36:40.230827-0500 xcrun[10092:137207] Failed to open macho file at /Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/metal-readobj for reading: Too many levels of symbolic links
+Result: 2022-07-27 16:24:57.584544-0500 xcrun[5907:86868] Failed to open macho file at /Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/metal-readobj for reading: Too many levels of symbolic links
 
 File: /var/folders/bd/9qd81pgj4xj01bg4sgp43dvr0000gn/T/harvested-archive.metallib
 Format: MetalLib
@@ -155,7 +155,7 @@ Verify/Display Information about Thin GPU Archive
 
 
 Command: xcrun metal-readobj /var/folders/bd/9qd81pgj4xj01bg4sgp43dvr0000gn/T/thin-archive.metallib
-Result: 2022-06-23 12:36:40.249596-0500 xcrun[10094:137217] Failed to open macho file at /Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/metal-readobj for reading: Too many levels of symbolic links
+Result: 2022-07-27 16:24:57.604079-0500 xcrun[5909:86878] Failed to open macho file at /Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/metal-readobj for reading: Too many levels of symbolic links
 
 File: /var/folders/bd/9qd81pgj4xj01bg4sgp43dvr0000gn/T/thin-archive.metallib
 Format: Mach-O 64-bit Apple GPU
@@ -168,8 +168,25 @@ Using metal-source to get pipeline descriptor
 ---------------------------------------------
 
 
+Command: rm -rf /var/folders/bd/9qd81pgj4xj01bg4sgp43dvr0000gn/T/descriptors.json
+Result:
+
 Command: xcrun metal-source -flatbuffers=json /var/folders/bd/9qd81pgj4xj01bg4sgp43dvr0000gn/T/thin-archive.metallib -o /var/folders/bd/9qd81pgj4xj01bg4sgp43dvr0000gn/T/descriptors.json
 Result:
+
+--------------------------------
+Display descriptor... directory?
+--------------------------------
+
+
+Command: find /var/folders/bd/9qd81pgj4xj01bg4sgp43dvr0000gn/T/descriptors.json
+Result: /var/folders/bd/9qd81pgj4xj01bg4sgp43dvr0000gn/T/descriptors.json
+/var/folders/bd/9qd81pgj4xj01bg4sgp43dvr0000gn/T/descriptors.json/metallib
+/var/folders/bd/9qd81pgj4xj01bg4sgp43dvr0000gn/T/descriptors.json/metallib/532BF88F-181E-304B-9AB8-21835C352E8D.metallib
+/var/folders/bd/9qd81pgj4xj01bg4sgp43dvr0000gn/T/descriptors.json/object
+/var/folders/bd/9qd81pgj4xj01bg4sgp43dvr0000gn/T/descriptors.json/object/1-0.metallib
+/var/folders/bd/9qd81pgj4xj01bg4sgp43dvr0000gn/T/descriptors.json/object/0-0.metallib
+
 Program ended with exit code: 0
 ```
 

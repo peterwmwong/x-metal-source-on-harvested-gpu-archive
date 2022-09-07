@@ -1,4 +1,4 @@
-This project demonstrates the `metal-source: error: unsupported binary format` error when trying to use `metal-source` on a harvested GPU archive.
+This project attempts to extract a pipeline script using `metal-source` on a harvested GPU archive.
 
 # Background
 

@@ -7,7 +7,7 @@ The WWDC 2022 session [Target and optimize GPU binaries with Metal 3](https://de
 Using the session's ([5:55](https://developer.apple.com/videos/play/wwdc2022/10102/?time=355)) command line directions:
 
 ```sh
-> metal-source -flatbuffers=json harvested-binaryArchive.metallib -o /tmp/descriptors.mtlp-json
+> metal-source -flatbuffers=json harvested-archive.metallib -o /tmp/descriptors.mtlp-json
 ```
 
 # Reproduction Overview
@@ -23,33 +23,8 @@ Running this project...
 2. Create a simple render pipeline
     ```swift
     let device = MTLCreateSystemDefaultDevice()!
-    let commandQueue = device.makeCommandQueue()!
-    let lib = try device.makeLibrary(
-        source: """
-        #include <metal_stdlib>
-        using namespace metal;
-
-        struct VertexOut {
-            float4 position  [[position]];
-            float point_size [[point_size]];
-        };
-
-
-        [[vertex]]
-        VertexOut main_vertex() {
-            return {
-                .position = float4(0),
-                .point_size = 128.0
-            };
-        }
-
-        [[fragment]]
-        half4 main_fragment() {
-            return half4(1);
-        }
-        """,
-        options: nil
-    )
+    /* See shaders.metal */
+    let lib = device.makeDefaultLibrary()!
     let pipelineDesc = MTLRenderPipelineDescriptor()
     pipelineDesc.vertexFunction = lib.makeFunction(name: "main_vertex")
     pipelineDesc.fragmentFunction = lib.makeFunction(name: "main_fragment")
@@ -69,52 +44,35 @@ Running this project...
     # Runs the following shell command
     xcrun metal-readobj harvested-archive.metallib
     ```
-5. Create Thin GPU Archive
+5. Use `metal-source` to get pipeline descriptor
     ```sh
     # Runs the following shell command
-    xcrun air-lipo -thin applegpu_g13s harvested-archive.metallib -o thin-archive.metallib
-    ```
-6. Verify/Display Information about Thin GPU Archive
-    ```sh
-    # Runs the following shell command
-    xcrun metal-readobj thin-archive.metallib
-    ```
-7. Use `metal-source` to get pipeline descriptor
-    ```sh
-    # Runs the following shell command
-    xcrun metal-source -flatbuffers=json thin-archive.metallib -o descriptors.json
+    xcrun metal-source -flatbuffers=json harvested-archive.metallib -o descriptors.mtlp-json
     ```
 
-# Example output showing error
-
-## Environment
-
-- MacBook Pro 2021 M1 Max
-- macOS Version 13.0 Beta 22A5311f
-- Xcode Version 14.0 beta 14A5284g
+# Output showing no mtlp-json file is produced... but a directory instead
 
 ```
-
 -----------
 Environment
 -----------
 
-
 Command: xcrun --show-sdk-path
-Result: /Applications/Xcode-beta.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk
+Command stdout/stderr:
+/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
 
 
 Command: xcrun xcodebuild -version
-Result: Xcode 14.0
-Build version 14A5284g
+Command stdout/stderr:
+Xcode 14.0
+Build version 14A309
 
 
 ------------------------
 Creating Render Pipeline
 ------------------------
-
-2022-07-27 16:24:57.503598-0500 x-metal-source-on-harvested-gpu-archive[5900:86420] Metal GPU Frame Capture Enabled
-2022-07-27 16:24:57.503970-0500 x-metal-source-on-harvested-gpu-archive[5900:86420] Metal API Validation Enabled
+2022-09-07 16:32:24.656426-0500 x-metal-source-on-harvested-gpu-archive[6209:81985] Metal GPU Frame Capture Enabled
+2022-09-07 16:32:24.656910-0500 x-metal-source-on-harvested-gpu-archive[6209:81985] Metal API Validation Enabled
 
 ----------------------
 Harvesting GPU Archive
@@ -126,9 +84,9 @@ Created archive: /var/folders/bd/9qd81pgj4xj01bg4sgp43dvr0000gn/T/harvested-arch
 Verify/Display Information about GPU Archive
 --------------------------------------------
 
-
 Command: xcrun metal-readobj /var/folders/bd/9qd81pgj4xj01bg4sgp43dvr0000gn/T/harvested-archive.metallib
-Result: 2022-07-27 16:24:57.584544-0500 xcrun[5907:86868] Failed to open macho file at /Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/metal-readobj for reading: Too many levels of symbolic links
+Command stdout/stderr:
+2022-09-07 16:32:24.712815-0500 xcrun[6220:82490] Failed to open macho file at /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/metal-readobj for reading: Too many levels of symbolic links
 
 File: /var/folders/bd/9qd81pgj4xj01bg4sgp43dvr0000gn/T/harvested-archive.metallib
 Format: MetalLib
@@ -141,52 +99,35 @@ Arch: agx2
 AddressSize: 64bit
 
 
------------------------
-Create Thin GPU Archive
------------------------
-
-
-Command: xcrun air-lipo -thin applegpu_g13s /var/folders/bd/9qd81pgj4xj01bg4sgp43dvr0000gn/T/harvested-archive.metallib -o /var/folders/bd/9qd81pgj4xj01bg4sgp43dvr0000gn/T/thin-archive.metallib
-Result:
-
--------------------------------------------------
-Verify/Display Information about Thin GPU Archive
--------------------------------------------------
-
-
-Command: xcrun metal-readobj /var/folders/bd/9qd81pgj4xj01bg4sgp43dvr0000gn/T/thin-archive.metallib
-Result: 2022-07-27 16:24:57.604079-0500 xcrun[5909:86878] Failed to open macho file at /Applications/Xcode-beta.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/metal-readobj for reading: Too many levels of symbolic links
-
-File: /var/folders/bd/9qd81pgj4xj01bg4sgp43dvr0000gn/T/thin-archive.metallib
-Format: Mach-O 64-bit Apple GPU
-Arch: agx2
-AddressSize: 64bit
-
-
 ---------------------------------------------
 Using metal-source to get pipeline descriptor
 ---------------------------------------------
 
-
-Command: rm -rf /var/folders/bd/9qd81pgj4xj01bg4sgp43dvr0000gn/T/descriptors.json
-Result:
-
-Command: xcrun metal-source -flatbuffers=json /var/folders/bd/9qd81pgj4xj01bg4sgp43dvr0000gn/T/thin-archive.metallib -o /var/folders/bd/9qd81pgj4xj01bg4sgp43dvr0000gn/T/descriptors.json
-Result:
-
---------------------------------
-Display descriptor... directory?
---------------------------------
+Command: rm -rf /var/folders/bd/9qd81pgj4xj01bg4sgp43dvr0000gn/T/descriptors.mtlp-json # Remove any existing
+Command stdout/stderr:
 
 
-Command: find /var/folders/bd/9qd81pgj4xj01bg4sgp43dvr0000gn/T/descriptors.json
-Result: /var/folders/bd/9qd81pgj4xj01bg4sgp43dvr0000gn/T/descriptors.json
-/var/folders/bd/9qd81pgj4xj01bg4sgp43dvr0000gn/T/descriptors.json/metallib
-/var/folders/bd/9qd81pgj4xj01bg4sgp43dvr0000gn/T/descriptors.json/metallib/532BF88F-181E-304B-9AB8-21835C352E8D.metallib
-/var/folders/bd/9qd81pgj4xj01bg4sgp43dvr0000gn/T/descriptors.json/object
-/var/folders/bd/9qd81pgj4xj01bg4sgp43dvr0000gn/T/descriptors.json/object/1-0.metallib
-/var/folders/bd/9qd81pgj4xj01bg4sgp43dvr0000gn/T/descriptors.json/object/0-0.metallib
+Command: xcrun metal-source -flatbuffers=json /var/folders/bd/9qd81pgj4xj01bg4sgp43dvr0000gn/T/harvested-archive.metallib -o /var/folders/bd/9qd81pgj4xj01bg4sgp43dvr0000gn/T/descriptors.mtlp-json
+Command stdout/stderr:
 
-Program ended with exit code: 0
+
+-------------------------------------------------
+Display descriptor... directory? not a JSON file?
+-------------------------------------------------
+
+Command: find /var/folders/bd/9qd81pgj4xj01bg4sgp43dvr0000gn/T/descriptors.mtlp-json
+Command stdout/stderr:
+/var/folders/bd/9qd81pgj4xj01bg4sgp43dvr0000gn/T/descriptors.mtlp-json
+/var/folders/bd/9qd81pgj4xj01bg4sgp43dvr0000gn/T/descriptors.mtlp-json/applegpu_g13s
+/var/folders/bd/9qd81pgj4xj01bg4sgp43dvr0000gn/T/descriptors.mtlp-json/applegpu_g13s/metallib
+/var/folders/bd/9qd81pgj4xj01bg4sgp43dvr0000gn/T/descriptors.mtlp-json/applegpu_g13s/metallib/59738F01-C715-324F-A6B3-D5C7D147B5E9.metallib
+/var/folders/bd/9qd81pgj4xj01bg4sgp43dvr0000gn/T/descriptors.mtlp-json/applegpu_g13s/object
+/var/folders/bd/9qd81pgj4xj01bg4sgp43dvr0000gn/T/descriptors.mtlp-json/applegpu_g13s/object/1-0.metallib
+/var/folders/bd/9qd81pgj4xj01bg4sgp43dvr0000gn/T/descriptors.mtlp-json/applegpu_g13s/object/0-0.metallib
 ```
 
+## Environment
+
+- MacBook Pro 2021 M1 Max
+- macOS Version 13.0 Beta 6 22A5331f
+- Xcode Version 14.0 RC 14A309

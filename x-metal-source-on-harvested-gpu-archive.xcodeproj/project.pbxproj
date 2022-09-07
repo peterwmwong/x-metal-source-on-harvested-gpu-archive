@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		1337F4EC2864C70300CBE8A6 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1337F4EB2864C70300CBE8A6 /* main.swift */; };
+		13C9A07728C9411B008C16DB /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 13C9A07628C9411B008C16DB /* Metal.framework */; };
+		13C9A07928C94138008C16DB /* shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 13C9A07828C94138008C16DB /* shaders.metal */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -25,6 +27,8 @@
 /* Begin PBXFileReference section */
 		1337F4E82864C70300CBE8A6 /* x-metal-source-on-harvested-gpu-archive */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "x-metal-source-on-harvested-gpu-archive"; sourceTree = BUILT_PRODUCTS_DIR; };
 		1337F4EB2864C70300CBE8A6 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		13C9A07628C9411B008C16DB /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
+		13C9A07828C94138008C16DB /* shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = shaders.metal; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -32,6 +36,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				13C9A07728C9411B008C16DB /* Metal.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -43,6 +48,7 @@
 			children = (
 				1337F4EA2864C70300CBE8A6 /* x-metal-source-on-harvested-gpu-archive */,
 				1337F4E92864C70300CBE8A6 /* Products */,
+				13C9A07528C9411B008C16DB /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -58,8 +64,17 @@
 			isa = PBXGroup;
 			children = (
 				1337F4EB2864C70300CBE8A6 /* main.swift */,
+				13C9A07828C94138008C16DB /* shaders.metal */,
 			);
 			path = "x-metal-source-on-harvested-gpu-archive";
+			sourceTree = "<group>";
+		};
+		13C9A07528C9411B008C16DB /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				13C9A07628C9411B008C16DB /* Metal.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -120,6 +135,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				13C9A07928C94138008C16DB /* shaders.metal in Sources */,
 				1337F4EC2864C70300CBE8A6 /* main.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

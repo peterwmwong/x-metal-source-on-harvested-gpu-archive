@@ -14,7 +14,7 @@ func shell(_ command: String) throws {
     task.standardInput = nil
     try task.run()
     let result = String(data: pipe.fileHandleForReading.readDataToEndOfFile(), encoding: .utf8)!
-    print("Result: \(result)");
+    print("Command stdout/stderr:\n\(result)");
 }
 
 print("""
@@ -22,7 +22,6 @@ print("""
 -----------
 Environment
 -----------
-
 """)
 try shell("xcrun --show-sdk-path")
 try shell("xcrun xcodebuild -version")
@@ -33,36 +32,10 @@ print("""
 ------------------------
 Creating Render Pipeline
 ------------------------
-
 """)
 let device = MTLCreateSystemDefaultDevice()!
-let commandQueue = device.makeCommandQueue()!
-let lib = try device.makeLibrary(
-    source: """
-    #include <metal_stdlib>
-    using namespace metal;
-
-    struct VertexOut {
-        float4 position  [[position]];
-        float point_size [[point_size]];
-    };
-
-
-    [[vertex]]
-    VertexOut main_vertex() {
-        return {
-            .position = float4(0),
-            .point_size = 128.0
-        };
-    }
-
-    [[fragment]]
-    half4 main_fragment() {
-        return half4(1);
-    }
-    """,
-    options: nil
-)
+/* See shaders.metal */
+let lib = device.makeDefaultLibrary()!
 let pipelineDesc = MTLRenderPipelineDescriptor()
 pipelineDesc.vertexFunction = lib.makeFunction(name: "main_vertex")
 pipelineDesc.fragmentFunction = lib.makeFunction(name: "main_fragment")
@@ -87,51 +60,25 @@ print("""
 --------------------------------------------
 Verify/Display Information about GPU Archive
 --------------------------------------------
-
 """)
 
 try shell("xcrun metal-readobj \(archivePath)")
-
-
-print("""
-
------------------------
-Create Thin GPU Archive
------------------------
-
-""")
-
-let thinPath = NSTemporaryDirectory().appending("thin-archive.metallib")
-try shell("xcrun air-lipo -thin applegpu_g13s \(archivePath) -o \(thinPath)")
-
-
-print("""
-
--------------------------------------------------
-Verify/Display Information about Thin GPU Archive
--------------------------------------------------
-
-""")
-
-try shell("xcrun metal-readobj \(thinPath)")
 
 print("""
 
 ---------------------------------------------
 Using metal-source to get pipeline descriptor
 ---------------------------------------------
-
 """)
-let descriptorsPath = NSTemporaryDirectory().appending("descriptors.json")
+let descriptorsPath = NSTemporaryDirectory().appending("descriptors.mtlp-json")
 
-try shell("rm -rf \(descriptorsPath)")
-try shell("xcrun metal-source -flatbuffers=json \(thinPath) -o \(descriptorsPath)")
+try shell("rm -rf \(descriptorsPath) # Remove any existing")
+try shell("xcrun metal-source -flatbuffers=json \(archivePath) -o \(descriptorsPath)")
 
 print("""
 
---------------------------------
-Display descriptor... directory?
---------------------------------
-
+-------------------------------------------------
+Display descriptor... directory? not a JSON file?
+-------------------------------------------------
 """)
 try shell("find \(descriptorsPath)")
